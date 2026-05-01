@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import ServicesSection from "./components/ServicesSection";
 import WorkSection from "./components/WorkSection";
+import ProcessSection from "./components/ProcessSection";
+import AboutSection from "./components/AboutSection";
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -603,10 +605,10 @@ export default function Home() {
       {/* ── OTHER SECTIONS ── */}
       <ServicesSection />
       <WorkSection />
+      <ProcessSection/>
+      <AboutSection/>
 
       {[
-        { id: "process", tag: "How We Build", title: "Process" },
-        { id: "about", tag: "Who We Are", title: "About" },
         { id: "contact", tag: "Let's Talk", title: "Contact" },
       ].map((s) => (
         <section key={s.id} id={s.id} className="page">
