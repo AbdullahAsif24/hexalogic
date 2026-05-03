@@ -3,237 +3,274 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 
 /* ─────────────────── DATA ─────────────────── */
 const PROJECTS = [
-  { id:'01', type:'WEBSITE',    titleA:'Headphones', titleB:'Landing Page', desc:'A responsive landing page for premium headphones crafted with Html, Css, Js and Bootstrap. Immersive audio aesthetics translated into elegant digital form.', tags:['Html','Css','Javascript','Bootstrap'], link:'#', accent:'#e8192c', img:'/projects/headphones.png' },
-  { id:'02', type:'E-COMMERCE', titleA:'Caffeine',   titleB:'Empire',       desc:'A sleek coffee eCommerce platform delivering premium experiences online. Warm tones, rich typography, and buttery-smooth interactions throughout.',         tags:['Html','Css','jQuery','Bootstrap'],      link:'#', accent:'#c9963b', img:'/projects/caffeine.png'  },
-  { id:'03', type:'WEB APP',    titleA:'Expense',    titleB:'Tracker',      desc:'A full-stack expense tracking app built with Next.js and Firebase. Real-time sync, category intelligence, and beautiful data visualizations.',              tags:['Next.js','TypeScript','Tailwind','Firebase'], link:'#', accent:'#e8192c', img:'/projects/expense.png'   },
-  { id:'04', type:'SAAS',       titleA:'AI',         titleB:'Dashboard',    desc:'Powerful analytics dashboard powered by AI insights with live data visualization. Translating complex data into decisive clarity.',                          tags:['React','TypeScript','Node.js','OpenAI'], link:'#', accent:'#c9963b', img:'/projects/dashboard.png' },
-  { id:'05', type:'MOBILE APP', titleA:'FitTrack',   titleB:'Pro',          desc:'Cross-platform fitness app with dynamic workout planning and deep progress analytics. Your performance, beautifully quantified.',                            tags:['React Native','Expo','Supabase','TypeScript'], link:'#', accent:'#e8192c', img:'/projects/fittrack.png'  },
-  { id:'06', type:'WEB APP',    titleA:'Crypto',     titleB:'Vault',        desc:'Real-time crypto portfolio tracker with advanced charting and market analysis tools. Precision instruments for the modern investor.',                        tags:['Vue.js','Chart.js','WebSockets','Node.js'], link:'#', accent:'#c9963b', img:'/projects/crypto.png'    },
-  { id:'07', type:'AUTOMATION', titleA:'FlowBot',    titleB:'CRM',          desc:'AI-powered CRM platform with smart lead scoring and pipeline automation. Turning cold data into warm relationships.',                                        tags:['Next.js','Python','PostgreSQL','OpenAI'], link:'#', accent:'#e8192c', img:'/projects/flowbot.png'   },
+  { id: '01', type: 'RESTAURANT', titleA: 'Ember &', titleB: 'Oak', desc: 'A fine-dining restaurant website with online reservations, seasonal menu showcases, and immersive food photography layouts. Warmth and elegance on every scroll.', tags: ['Next.js', 'Tailwind', 'Framer Motion', 'OpenTable API'], link: '#', accent: '#e8192c', img: '/projects/resturant-website.png' },
+  { id: '02', type: 'FITNESS', titleA: 'Iron', titleB: 'Republic', desc: 'A high-energy gym website with class schedules, membership tiers, trainer profiles, and a live booking system. Built to convert visitors into members.', tags: ['React', 'TypeScript', 'Tailwind', 'Stripe'], link: '#', accent: '#c9963b', img: '/projects/iron-republic.png' },
+  { id: '03', type: 'REAL ESTATE', titleA: 'Prestige', titleB: 'Properties', desc: 'A luxury real estate agency site with interactive property listings, map integration, and virtual tour support. Turning browsers into buyers.', tags: ['Next.js', 'TypeScript', 'Google Maps', 'Sanity'], link: '#', accent: '#e8192c', img: '/projects/prestige-properties.png' },
+  { id: '04', type: 'SALON & SPA', titleA: 'Lumière', titleB: 'Studio', desc: 'An elegant beauty salon website with service menus, stylist portfolios, and a seamless appointment booking flow. Luxury in every pixel.', tags: ['React', 'Tailwind', 'Calendly API', 'Framer Motion'], link: '#', accent: '#c9963b', img: '/projects/salon.png' },
+  { id: '05', type: 'LAW FIRM', titleA: 'Vance &', titleB: 'Associates', desc: 'A professional law firm website projecting authority and trust. Practice area pages, attorney bios, consultation forms, and ADA-compliant design throughout.', tags: ['Next.js', 'TypeScript', 'Tailwind', 'HubSpot'], link: '#', accent: '#e8192c', img: '/projects/law-firm.png' },
+  { id: '06', type: 'HOTEL', titleA: 'The', titleB: 'Grandview', desc: 'A boutique hotel website with room galleries, availability calendars, local experience guides, and a frictionless direct booking engine.', tags: ['Next.js', 'Tailwind', 'Stripe', 'Cloudinary'], link: '#', accent: '#c9963b', img: '/projects/hotel.png' },
+  { id: '07', type: 'E-COMMERCE', titleA: 'Bloom', titleB: 'Botanics', desc: 'A premium plant and floral eCommerce store with curated collections, care guides, subscription boxes, and same-day delivery scheduling.', tags: ['Next.js', 'Shopify', 'TypeScript', 'Tailwind'], link: '#', accent: '#e8192c', img: '/projects/ecommerce.png' },
 ]
 
 /* ─────────────────── PARTICLE BG ─────────────────── */
 function ParticleBg() {
-  const cvs   = useRef<HTMLCanvasElement>(null)
-  const mouse = useRef({ x:-9999, y:-9999 })
-  const raf   = useRef<number>(0)
+  const cvs = useRef<HTMLCanvasElement>(null)
+  const mouse = useRef({ x: -9999, y: -9999 })
+  const raf = useRef<number>(0)
 
-  useEffect(()=>{
-    const canvas = cvs.current; if(!canvas) return
+  useEffect(() => {
+    const canvas = cvs.current; if (!canvas) return
     const ctx = canvas.getContext('2d')!
 
-    type P={ x:number; y:number; baseY:number; r:number; spd:number; ph:number; col:string; depth:number; vx:number; vy:number }
-    let W=0,H=0,pts:P[]=[],t=0
+    type P = { x: number; y: number; baseY: number; r: number; spd: number; ph: number; col: string; depth: number; vx: number; vy: number }
+    let W = 0, H = 0, pts: P[] = [], t = 0
 
-    const init=()=>{
-      W=canvas.width =canvas.offsetWidth *Math.min(devicePixelRatio,2)
-      H=canvas.height=canvas.offsetHeight*Math.min(devicePixelRatio,2)
-      pts=[]
+    const init = () => {
+      W = canvas.width = canvas.offsetWidth * Math.min(devicePixelRatio, 2)
+      H = canvas.height = canvas.offsetHeight * Math.min(devicePixelRatio, 2)
+      pts = []
       /* ↑ many more particles — 1 per 2200px² */
-      const n=Math.floor(W*H/2200)
-      for(let i=0;i<n;i++){
-        const d=Math.random()
-        const by=H*(.38+Math.sin(d*Math.PI)*.32)+(Math.random()-.5)*H*.55
-        const isRed=Math.random()>.68
+      const n = Math.floor(W * H / 2200)
+      for (let i = 0; i < n; i++) {
+        const d = Math.random()
+        const by = H * (.38 + Math.sin(d * Math.PI) * .32) + (Math.random() - .5) * H * .55
+        const isRed = Math.random() > .68
         pts.push({
-          x:Math.random()*W, y:by, baseY:by,
-          r:.4+d*3.4, spd:.003+d*.02, ph:Math.random()*Math.PI*2,
-          col:isRed
-            ?`rgba(232,25,44,${(.1+d*.62).toFixed(2)})`
-            :`rgba(201,150,59,${(.08+d*.52).toFixed(2)})`,
-          depth:d, vx:0, vy:0,
+          x: Math.random() * W, y: by, baseY: by,
+          r: .4 + d * 3.4, spd: .003 + d * .02, ph: Math.random() * Math.PI * 2,
+          col: isRed
+            ? `rgba(232,25,44,${(.1 + d * .62).toFixed(2)})`
+            : `rgba(201,150,59,${(.08 + d * .52).toFixed(2)})`,
+          depth: d, vx: 0, vy: 0,
         })
       }
     }
 
-    const draw=()=>{
+    const draw = () => {
       t++
-      ctx.clearRect(0,0,W,H)
+      ctx.clearRect(0, 0, W, H)
 
       /* deep glow */
-      const bg=ctx.createRadialGradient(W*.5,H*.44,0,W*.5,H*.44,W*.62)
-      bg.addColorStop(0,'rgba(175,8,20,0.22)'); bg.addColorStop(1,'rgba(0,0,0,0)')
-      ctx.fillStyle=bg; ctx.fillRect(0,0,W,H)
+      const bg = ctx.createRadialGradient(W * .5, H * .44, 0, W * .5, H * .44, W * .62)
+      bg.addColorStop(0, 'rgba(175,8,20,0.22)'); bg.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
 
       /* secondary glow bottom-right */
-      const bg2=ctx.createRadialGradient(W*.85,H*.75,0,W*.85,H*.75,W*.4)
-      bg2.addColorStop(0,'rgba(201,150,59,0.06)'); bg2.addColorStop(1,'rgba(0,0,0,0)')
-      ctx.fillStyle=bg2; ctx.fillRect(0,0,W,H)
+      const bg2 = ctx.createRadialGradient(W * .85, H * .75, 0, W * .85, H * .75, W * .4)
+      bg2.addColorStop(0, 'rgba(201,150,59,0.06)'); bg2.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = bg2; ctx.fillRect(0, 0, W, H)
 
       /* wave bands */
-      for(let w=0;w<6;w++){
-        const yc=H*(.34+w*.055),amp=H*(.038+w*.013),frq=.0038+w*.0008,spd=t*(.011+w*.003)
+      for (let w = 0; w < 6; w++) {
+        const yc = H * (.34 + w * .055), amp = H * (.038 + w * .013), frq = .0038 + w * .0008, spd = t * (.011 + w * .003)
         ctx.beginPath()
-        for(let x=0;x<=W;x+=5){
-          const y=yc+Math.sin(x*frq+spd)*amp+Math.sin(x*frq*1.9+spd*.65)*amp*.38
-          x===0?ctx.moveTo(x,y):ctx.lineTo(x,y)
+        for (let x = 0; x <= W; x += 5) {
+          const y = yc + Math.sin(x * frq + spd) * amp + Math.sin(x * frq * 1.9 + spd * .65) * amp * .38
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
         }
-        ctx.strokeStyle=`rgba(232,25,44,${.065-w*.008})`
-        ctx.lineWidth=Math.max(.4,1.8-w*.25); ctx.stroke()
+        ctx.strokeStyle = `rgba(232,25,44,${.065 - w * .008})`
+        ctx.lineWidth = Math.max(.4, 1.8 - w * .25); ctx.stroke()
       }
 
       /* particles */
-      const mx=mouse.current.x*Math.min(devicePixelRatio,2)
-      const my=mouse.current.y*Math.min(devicePixelRatio,2)
+      const mx = mouse.current.x * Math.min(devicePixelRatio, 2)
+      const my = mouse.current.y * Math.min(devicePixelRatio, 2)
 
-      pts.forEach(p=>{
-        p.y=p.baseY
-          +Math.sin(t*p.spd+p.ph)*(16+p.depth*34)
-          +Math.cos(t*p.spd*.6+p.ph*1.4)*(7+p.depth*13)
-        p.x+=p.spd*18; if(p.x>W+10) p.x=-10
+      pts.forEach(p => {
+        p.y = p.baseY
+          + Math.sin(t * p.spd + p.ph) * (16 + p.depth * 34)
+          + Math.cos(t * p.spd * .6 + p.ph * 1.4) * (7 + p.depth * 13)
+        p.x += p.spd * 18; if (p.x > W + 10) p.x = -10
 
-        const dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy),zone=180+p.depth*90
-        if(dist<zone&&dist>0){
-          const f=(1-dist/zone)*4*(0.35+p.depth*.65)
-          p.vx+=(dx/dist)*f; p.vy+=(dy/dist)*f
+        const dx = p.x - mx, dy = p.y - my, dist = Math.sqrt(dx * dx + dy * dy), zone = 180 + p.depth * 90
+        if (dist < zone && dist > 0) {
+          const f = (1 - dist / zone) * 4 * (0.35 + p.depth * .65)
+          p.vx += (dx / dist) * f; p.vy += (dy / dist) * f
         }
-        p.vx*=.8; p.vy*=.8; p.x+=p.vx; p.y+=p.vy
+        p.vx *= .8; p.vy *= .8; p.x += p.vx; p.y += p.vy
 
-        if(p.depth>.5){
-          const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*8)
-          g.addColorStop(0,p.col.replace(/[\d.]+\)$/,'0.18)')); g.addColorStop(1,'transparent')
-          ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r*8,0,Math.PI*2); ctx.fill()
+        if (p.depth > .5) {
+          const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 8)
+          g.addColorStop(0, p.col.replace(/[\d.]+\)$/, '0.18)')); g.addColorStop(1, 'transparent')
+          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 8, 0, Math.PI * 2); ctx.fill()
         }
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2)
-        ctx.fillStyle=p.col; ctx.fill()
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+        ctx.fillStyle = p.col; ctx.fill()
       })
 
       /* connections */
-      const near=pts.filter(p=>p.depth>.58)
-      for(let i=0;i<near.length;i++) for(let j=i+1;j<near.length;j++){
-        const dx=near[i].x-near[j].x,dy=near[i].y-near[j].y,d=Math.sqrt(dx*dx+dy*dy)
-        if(d<95){
-          ctx.beginPath(); ctx.moveTo(near[i].x,near[i].y); ctx.lineTo(near[j].x,near[j].y)
-          ctx.strokeStyle=`rgba(232,25,44,${((1-d/95)*.2).toFixed(3)})`
-          ctx.lineWidth=.5; ctx.stroke()
+      const near = pts.filter(p => p.depth > .58)
+      for (let i = 0; i < near.length; i++) for (let j = i + 1; j < near.length; j++) {
+        const dx = near[i].x - near[j].x, dy = near[i].y - near[j].y, d = Math.sqrt(dx * dx + dy * dy)
+        if (d < 95) {
+          ctx.beginPath(); ctx.moveTo(near[i].x, near[i].y); ctx.lineTo(near[j].x, near[j].y)
+          ctx.strokeStyle = `rgba(232,25,44,${((1 - d / 95) * .2).toFixed(3)})`
+          ctx.lineWidth = .5; ctx.stroke()
         }
       }
-      raf.current=requestAnimationFrame(draw)
+      raf.current = requestAnimationFrame(draw)
     }
 
-    const onMove=(e:MouseEvent)=>{ const r=canvas.getBoundingClientRect(); mouse.current={x:e.clientX-r.left,y:e.clientY-r.top} }
-    const onLeave=()=>{ mouse.current={x:-9999,y:-9999} }
-    const onResize=()=>init()
+    const onMove = (e: MouseEvent) => { const r = canvas.getBoundingClientRect(); mouse.current = { x: e.clientX - r.left, y: e.clientY - r.top } }
+    const onLeave = () => { mouse.current = { x: -9999, y: -9999 } }
+    const onResize = () => init()
 
-    init(); raf.current=requestAnimationFrame(draw)
-    window.addEventListener('resize',onResize)
-    window.addEventListener('mousemove',onMove)
-    window.addEventListener('mouseleave',onLeave)
-    return()=>{ cancelAnimationFrame(raf.current); window.removeEventListener('resize',onResize); window.removeEventListener('mousemove',onMove); window.removeEventListener('mouseleave',onLeave) }
-  },[])
+    init(); raf.current = requestAnimationFrame(draw)
+    window.addEventListener('resize', onResize)
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseleave', onLeave)
+    return () => { cancelAnimationFrame(raf.current); window.removeEventListener('resize', onResize); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseleave', onLeave) }
+  }, [])
 
-  return <canvas ref={cvs} style={{position:'absolute',inset:0,width:'100%',height:'100%',display:'block',pointerEvents:'none'}}/>
+  return <canvas ref={cvs} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', pointerEvents: 'none' }} />
 }
 
 /* ─────────────────── PROJECT IMAGE ─────────────────── */
-function ProjectImage({img,accent,active,dir}:{img:string;accent:string;active:boolean;dir:number}){
-  const [hasImg,setHasImg]=useState(true)
-  const [loaded,setLoaded]=useState(false)
-  return(
+function ProjectImage({ img, accent, active, dir }: { img: string; accent: string; active: boolean; dir: number }) {
+  const [hasImg, setHasImg] = useState(true)
+  const [loaded, setLoaded] = useState(false)
+  return (
     <div style={{
-      position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',
-      padding:'clamp(2.5rem,5vw,5rem)',
-      opacity:active?1:0,
-      transform:active?'none':`translateX(${dir*55}px) scale(0.93)`,
-      transition:'opacity 0.55s cubic-bezier(0.16,1,0.3,1),transform 0.55s cubic-bezier(0.16,1,0.3,1)',
-      pointerEvents:active?'auto':'none',
+      position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 'clamp(1rem,2vw,2rem)',          // ← reduced padding = image fills more space
+      opacity: active ? 1 : 0,
+      transform: active ? 'none' : `translateX(${dir * 55}px) scale(0.93)`,
+      transition: 'opacity 0.55s cubic-bezier(0.16,1,0.3,1),transform 0.55s cubic-bezier(0.16,1,0.3,1)',
+      pointerEvents: active ? 'auto' : 'none',
     }}>
       <div style={{
-        width:'100%',maxWidth:560,aspectRatio:'16/10',position:'relative',
-        borderRadius:14,overflow:'hidden',
-        border:`1px solid ${accent}2e`,
-        boxShadow:`0 0 70px ${accent}1a,0 40px 100px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.04)`,
+        width: '100%', maxWidth: 720,           // ← was 560, now wider
+        aspectRatio: '16/10', position: 'relative',
+        borderRadius: 14, overflow: 'hidden',
+        border: `1px solid ${accent}2e`,
+        boxShadow: `0 0 70px ${accent}1a,0 40px 100px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.04)`,
       }}>
-        {hasImg&&<img src={img} alt="" onLoad={()=>setLoaded(true)} onError={()=>setHasImg(false)} style={{width:'100%',height:'100%',objectFit:'cover',display:'block',opacity:loaded?1:0,transition:'opacity 0.4s'}}/>}
-        {(!hasImg||!loaded)&&(
-          <div style={{position:'absolute',inset:0,background:'linear-gradient(135deg,#0d0d16 0%,#141420 50%,#0d0d16 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:14}}>
-            <svg width="72" height="72" viewBox="0 0 72 72" style={{opacity:.18}}>
-              <rect x="6" y="6" width="60" height="60" rx="6" fill="none" stroke={accent} strokeWidth="1.2" strokeDasharray="7 4"/>
-              <line x1="6" y1="24" x2="66" y2="24" stroke={accent} strokeWidth=".7" opacity=".5"/>
-              <circle cx="18" cy="15" r="4" fill={accent} opacity=".5"/>
-              <rect x="14" y="34" width="44" height="5" rx="2" fill={accent} opacity=".18"/>
-              <rect x="14" y="46" width="30" height="4" rx="2" fill={accent} opacity=".12"/>
-            </svg>
-            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:'.46rem',letterSpacing:'.28em',textTransform:'uppercase',color:`${accent}44`}}>/public/projects/</span>
+        {hasImg && (
+          <img
+            src={img}
+            alt=""
+            onLoad={() => setLoaded(true)}
+            onError={() => setHasImg(false)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'top center',
+              display: 'block',
+              opacity: loaded ? 1 : 0,
+              transition: 'opacity 0.4s',
+            }}
+          />
+        )}
+        {(!hasImg || !loaded) && (
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(135deg,#0d0d16 0%,#141420 50%,#0d0d16 100%)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16,
+          }}>
+            {/* Browser chrome mockup */}
+            <div style={{ width: '72%', background: 'rgba(255,255,255,0.03)', borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ height: 28, background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', padding: '0 10px', gap: 6, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(232,25,44,0.4)' }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(201,150,59,0.3)' }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+                <div style={{ flex: 1, height: 14, background: 'rgba(255,255,255,0.04)', borderRadius: 3, marginLeft: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: '.38rem', color: 'rgba(255,255,255,0.2)', letterSpacing: '.1em' }}>
+                    hexalogic.co/{img.split('/').pop()?.replace('.png', '') ?? 'project'}
+                  </span>
+                </div>
+              </div>
+              <div style={{ height: 90, background: 'linear-gradient(180deg,rgba(255,255,255,0.02) 0%,transparent 100%)', display: 'flex', flexDirection: 'column', gap: 8, padding: '14px 14px' }}>
+                <div style={{ width: '55%', height: 8, borderRadius: 3, background: `${accent}22` }} />
+                <div style={{ width: '38%', height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.06)' }} />
+                <div style={{ width: '70%', height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.04)', marginTop: 4 }} />
+                <div style={{ width: '50%', height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.04)' }} />
+              </div>
+            </div>
+            <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: '.42rem', letterSpacing: '.28em', textTransform: 'uppercase', color: `${accent}55` }}>
+              add image → /public{img}
+            </span>
           </div>
         )}
-        <div style={{position:'absolute',inset:0,pointerEvents:'none',background:'linear-gradient(135deg,rgba(255,255,255,0.03) 0%,transparent 50%)'}}/>
-        <div style={{position:'absolute',bottom:0,left:0,right:0,height:'40%',background:'linear-gradient(to top,rgba(6,6,8,0.65),transparent)',pointerEvents:'none'}}/>
-        <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:`linear-gradient(to right,${accent},transparent)`}}/>
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(135deg,rgba(255,255,255,0.03) 0%,transparent 50%)' }} />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(to top,rgba(6,6,8,0.65),transparent)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(to right,${accent},transparent)` }} />
       </div>
     </div>
   )
 }
 
 /* ─────────────────── SLICE TRANSITION ─────────────────── */
-function SliceTransition({active,dir}:{active:boolean;dir:number}){
-  const slices=8
-  return(
-    <div style={{position:'absolute',inset:0,zIndex:60,pointerEvents:'none',display:'flex',flexDirection:'column'}}>
-      {Array.from({length:slices}).map((_,i)=>(
+function SliceTransition({ active, dir }: { active: boolean; dir: number }) {
+  const slices = 8
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 60, pointerEvents: 'none', display: 'flex', flexDirection: 'column' }}>
+      {Array.from({ length: slices }).map((_, i) => (
         <div key={i} style={{
-          flex:1,
-          background:'rgba(6,6,8,0.96)',
-          transform:active?'scaleX(1)':'scaleX(0)',
-          transformOrigin: i%2===0 ? 'left' : 'right',
+          flex: 1,
+          background: 'rgba(6,6,8,0.96)',
+          transform: active ? 'scaleX(1)' : 'scaleX(0)',
+          transformOrigin: i % 2 === 0 ? 'left' : 'right',
           transition: active
-            ? `transform 0.18s cubic-bezier(0.76,0,0.24,1) ${i*18}ms`
-            : `transform 0.22s cubic-bezier(0.16,1,0.3,1) ${(slices-1-i)*14+160}ms`,
-        }}/>
+            ? `transform 0.18s cubic-bezier(0.76,0,0.24,1) ${i * 18}ms`
+            : `transform 0.22s cubic-bezier(0.16,1,0.3,1) ${(slices - 1 - i) * 14 + 160}ms`,
+        }} />
       ))}
     </div>
   )
 }
 
 /* ─────────────────── MAIN ─────────────────── */
-export default function WorkSection(){
-  const [current,      setCurrent]      = useState(0)
-  const [transitioning,setTransitioning]= useState(false)
-  const [sliceIn,      setSliceIn]      = useState(false)
-  const [phase,        setPhase]        = useState<'idle'|'out'|'in'>('idle')
-  const [direction,    setDirection]    = useState(1)
-  const [hoverTitle,   setHoverTitle]   = useState(false)
+export default function WorkSection() {
+  const [current, setCurrent] = useState(0)
+  const [transitioning, setTransitioning] = useState(false)
+  const [sliceIn, setSliceIn] = useState(false)
+  const [phase, setPhase] = useState<'idle' | 'out' | 'in'>('idle')
+  const [direction, setDirection] = useState(1)
+  const [hoverTitle, setHoverTitle] = useState(false)
   const wheelLock = useRef(false)
-  const touchY    = useRef(0)
+  const touchY = useRef(0)
 
-  const goTo=useCallback((idx:number,dir=1)=>{
-    if(transitioning||idx===current) return
+  const goTo = useCallback((idx: number, dir = 1) => {
+    if (transitioning || idx === current) return
     setDirection(dir); setTransitioning(true); setPhase('out'); setSliceIn(true)
-    setTimeout(()=>{
+    setTimeout(() => {
       setCurrent(idx); setPhase('in')
-      setTimeout(()=>{ setSliceIn(false) },80)
-      setTimeout(()=>{ setPhase('idle'); setTransitioning(false) },640)
-    },300)
-  },[transitioning,current])
+      setTimeout(() => { setSliceIn(false) }, 80)
+      setTimeout(() => { setPhase('idle'); setTransitioning(false) }, 640)
+    }, 300)
+  }, [transitioning, current])
 
-  const next=useCallback(()=>goTo((current+1)%PROJECTS.length,1),[current,goTo])
-  const prev=useCallback(()=>goTo((current-1+PROJECTS.length)%PROJECTS.length,-1),[current,goTo])
+  const next = useCallback(() => goTo((current + 1) % PROJECTS.length, 1), [current, goTo])
+  const prev = useCallback(() => goTo((current - 1 + PROJECTS.length) % PROJECTS.length, -1), [current, goTo])
 
-  useEffect(()=>{
-    const onKey=(e:KeyboardEvent)=>{ if(e.key==='ArrowRight'||e.key==='ArrowDown') next(); if(e.key==='ArrowLeft'||e.key==='ArrowUp') prev() }
-    const onWheel=(e:WheelEvent)=>{ if(wheelLock.current) return; wheelLock.current=true; setTimeout(()=>{wheelLock.current=false},900); if(e.deltaY>30) next(); if(e.deltaY<-30) prev() }
-    const onTS=(e:TouchEvent)=>{ touchY.current=e.touches[0].clientY }
-    const onTE=(e:TouchEvent)=>{ const dy=touchY.current-e.changedTouches[0].clientY; if(dy>50) next(); if(dy<-50) prev() }
-    window.addEventListener('keydown',onKey)
-    window.addEventListener('wheel',onWheel,{passive:true})
-    window.addEventListener('touchstart',onTS,{passive:true})
-    window.addEventListener('touchend',onTE,{passive:true})
-    return()=>{ window.removeEventListener('keydown',onKey); window.removeEventListener('wheel',onWheel); window.removeEventListener('touchstart',onTS); window.removeEventListener('touchend',onTE) }
-  },[next,prev])
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next(); if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev() }
+    const onWheel = (e: WheelEvent) => { if (wheelLock.current) return; wheelLock.current = true; setTimeout(() => { wheelLock.current = false }, 900); if (e.deltaY > 30) next(); if (e.deltaY < -30) prev() }
+    const onTS = (e: TouchEvent) => { touchY.current = e.touches[0].clientY }
+    const onTE = (e: TouchEvent) => { const dy = touchY.current - e.changedTouches[0].clientY; if (dy > 50) next(); if (dy < -50) prev() }
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('touchstart', onTS, { passive: true })
+    window.addEventListener('touchend', onTE, { passive: true })
+    return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('wheel', onWheel); window.removeEventListener('touchstart', onTS); window.removeEventListener('touchend', onTE) }
+  }, [next, prev])
 
-  const proj    =PROJECTS[current]
-  const progress=((current+1)/PROJECTS.length)*100
+  const proj = PROJECTS[current]
+  const progress = ((current + 1) / PROJECTS.length) * 100
 
-  const anim=(delay='0s')=>({
-    animation: phase==='out'
+  const anim = (delay = '0s') => ({
+    animation: phase === 'out'
       ? `wsOut .3s cubic-bezier(0.4,0,1,1) ${delay} forwards`
-      : phase==='in'
+      : phase === 'in'
         ? `wsIn .6s cubic-bezier(0.16,1,0.3,1) ${delay} forwards`
         : 'none',
-    opacity: phase==='in'?0:1,
+    opacity: phase === 'in' ? 0 : 1,
   })
 
-  return(
+  return (
     <>
       <style>{`
         #ws-root{
@@ -389,26 +426,26 @@ export default function WorkSection(){
         <div id="ws-root">
 
           {/* ── PARTICLE BG ── */}
-          <ParticleBg/>
+          <ParticleBg />
 
           {/* per-project ambient */}
-          {PROJECTS.map((p,i)=>(
+          {PROJECTS.map((p, i) => (
             <div key={i} style={{
-              position:'absolute',inset:0,zIndex:1,pointerEvents:'none',
-              background:i%2===0
-                ?'radial-gradient(ellipse 80% 60% at 68% 50%,rgba(232,25,44,0.06) 0%,transparent 70%)'
-                :'radial-gradient(ellipse 80% 60% at 68% 50%,rgba(201,150,59,0.08) 0%,transparent 70%)',
-              opacity:i===current?1:0,transition:'opacity 1.1s ease',
-            }}/>
+              position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
+              background: i % 2 === 0
+                ? 'radial-gradient(ellipse 80% 60% at 68% 50%,rgba(232,25,44,0.06) 0%,transparent 70%)'
+                : 'radial-gradient(ellipse 80% 60% at 68% 50%,rgba(201,150,59,0.08) 0%,transparent 70%)',
+              opacity: i === current ? 1 : 0, transition: 'opacity 1.1s ease',
+            }} />
           ))}
 
           {/* grain */}
-          <div id="ws-grain"/>
+          <div id="ws-grain" />
           {/* scan */}
-          <div id="ws-scan"/>
+          <div id="ws-scan" />
           {/* corners */}
-          <div className="ws-c ws-c-tl"/><div className="ws-c ws-c-tr"/>
-          <div className="ws-c ws-c-bl"/><div className="ws-c ws-c-br"/>
+          <div className="ws-c ws-c-tl" /><div className="ws-c ws-c-tr" />
+          <div className="ws-c ws-c-bl" /><div className="ws-c ws-c-br" />
 
           {/* ── TOPBAR — true 3-col grid ── */}
           <div id="ws-top">
@@ -419,7 +456,7 @@ export default function WorkSection(){
 
             <div className="ws-top-center">
               <span className="ws-brand">Projects</span>
-              <span className="ws-sub" style={{textAlign:'center'}}>
+              <span className="ws-sub" style={{ textAlign: 'center' }}>
                 {PROJECTS.length} builds &amp; counting
               </span>
             </div>
@@ -431,10 +468,10 @@ export default function WorkSection(){
           </div>
 
           {/* ── SLICE TRANSITION ── */}
-          <SliceTransition active={sliceIn} dir={direction}/>
+          <SliceTransition active={sliceIn} dir={direction} />
 
           {/* divider */}
-          <div className="ws-vdiv"/>
+          <div className="ws-vdiv" />
 
           {/* ── MAIN GRID ── */}
           <div id="ws-grid">
@@ -446,7 +483,7 @@ export default function WorkSection(){
               {/* badge */}
               <div style={anim('0s')}>
                 <div className="ws-badge">
-                  <div className="ws-badge-line"/>
+                  <div className="ws-badge-line" />
                   <span className="ws-badge-txt">{proj.type}</span>
                 </div>
               </div>
@@ -455,24 +492,24 @@ export default function WorkSection(){
               <div style={anim('0.09s')}>
                 <h2
                   className="ws-title"
-                  onMouseEnter={()=>setHoverTitle(true)}
-                  onMouseLeave={()=>setHoverTitle(false)}
+                  onMouseEnter={() => setHoverTitle(true)}
+                  onMouseLeave={() => setHoverTitle(false)}
                 >
-                  {proj.titleA.split('').map((c,i)=>(
-                    <span key={i} className="ws-ch" style={{transitionDelay:`${i*26}ms`,color:hoverTitle?'#fff':'inherit'}}>{c}</span>
+                  {proj.titleA.split('').map((c, i) => (
+                    <span key={i} className="ws-ch" style={{ transitionDelay: `${i * 26}ms`, color: hoverTitle ? '#fff' : 'inherit' }}>{c}</span>
                   ))}
-                  <br/>
+                  <br />
                   <em>
-                    {proj.titleB.split('').map((c,i)=>(
-                      <span key={i} className="ws-ch" style={{transitionDelay:`${(proj.titleA.length+i)*26}ms`}}>{c}</span>
+                    {proj.titleB.split('').map((c, i) => (
+                      <span key={i} className="ws-ch" style={{ transitionDelay: `${(proj.titleA.length + i) * 26}ms` }}>{c}</span>
                     ))}
                   </em>
-                  <div className="ws-title-bar"/>
+                  <div className="ws-title-bar" />
                 </h2>
               </div>
 
               {/* rule */}
-              <div className={`ws-rule${phase!=='out'?' on':''}`}/>
+              <div className={`ws-rule${phase !== 'out' ? ' on' : ''}`} />
 
               {/* desc */}
               <div style={anim('0.2s')}>
@@ -482,7 +519,7 @@ export default function WorkSection(){
               {/* tags */}
               <div style={anim('0.3s')}>
                 <div className="ws-tags">
-                  {proj.tags.map((tg,i)=><span key={i} className="ws-tag">{tg}</span>)}
+                  {proj.tags.map((tg, i) => <span key={i} className="ws-tag">{tg}</span>)}
                 </div>
               </div>
 
@@ -496,8 +533,8 @@ export default function WorkSection(){
 
             {/* RIGHT */}
             <div className="ws-right">
-              {PROJECTS.map((p,i)=>(
-                <ProjectImage key={i} img={p.img} accent={p.accent} active={i===current} dir={direction}/>
+              {PROJECTS.map((p, i) => (
+                <ProjectImage key={i} img={p.img} accent={p.accent} active={i === current} dir={direction} />
               ))}
             </div>
           </div>
@@ -506,8 +543,8 @@ export default function WorkSection(){
           <div id="ws-nav">
             <button className="ws-btn" onClick={prev}>←</button>
             <div className="ws-dots">
-              {PROJECTS.map((_,i)=>(
-                <div key={i} className={`ws-dot${i===current?' on':''}`} onClick={()=>goTo(i,i>current?1:-1)}/>
+              {PROJECTS.map((_, i) => (
+                <div key={i} className={`ws-dot${i === current ? ' on' : ''}`} onClick={() => goTo(i, i > current ? 1 : -1)} />
               ))}
             </div>
             <button className="ws-btn" onClick={next}>→</button>
@@ -515,13 +552,13 @@ export default function WorkSection(){
 
           {/* counter */}
           <div id="ws-ctr">
-            <span className="ws-ctr-big">{String(current+1).padStart(2,'0')}</span>
-            /{String(PROJECTS.length).padStart(2,'0')}
+            <span className="ws-ctr-big">{String(current + 1).padStart(2, '0')}</span>
+            /{String(PROJECTS.length).padStart(2, '0')}
           </div>
 
           {/* progress */}
           <div id="ws-prog">
-            <div className="ws-prog-fill" style={{width:`${progress}%`}}/>
+            <div className="ws-prog-fill" style={{ width: `${progress}%` }} />
           </div>
 
         </div>
