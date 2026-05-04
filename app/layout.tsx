@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,7 +28,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Script src="https://elfsightcdn.com/platform.js" strategy="afterInteractive" />
+        <div className="elfsight-app-7ad94452-97ee-4eb3-b490-46ba32aa7cd5" data-elfsight-app-lazy></div>
+      </body>
     </html>
   );
 }
